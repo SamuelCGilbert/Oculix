@@ -86,6 +86,16 @@ public final class KWinWayland {
     return true;
   }
 
+  /** Path of the kwin-input helper, or null. */
+  static String helper() {
+    return helperPath();
+  }
+
+  /** X11 coordinates / KWin logical coordinates. */
+  static double xwaylandScale() {
+    return scale();
+  }
+
   private static String helperPath() {
     String[] candidates = {
         System.getenv("OCULIX_KWIN_INPUT"),

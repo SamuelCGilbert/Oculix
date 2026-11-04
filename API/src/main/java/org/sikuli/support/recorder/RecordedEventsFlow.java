@@ -356,7 +356,8 @@ public class RecordedEventsFlow {
   private List<IRecordedAction> handleMouseRelease(Long time, NativeMouseEvent event) {
     List<IRecordedAction> actions = new ArrayList<>();
 
-    Long firstMouseMoveEventTime = findFirstMouseMoveTime(pressedTime);
+    // A release without a recorded press (pressed before recording started)
+    Long firstMouseMoveEventTime = findFirstMouseMoveTime(pressedTime != null ? pressedTime : time);
     Object[] result = readCeilingScreenshot(firstMouseMoveEventTime);
     Mat screenshot = (Mat) result[0];
     int screenID = (Integer) result[1];

@@ -92,6 +92,10 @@ public class Recorder implements NativeKeyListener, NativeMouseListener, NativeM
    *         went wrong (native lib missing, hook refused by OS, etc.)
    */
   private static boolean registerNativeHook() {
+    if (org.sikuli.support.devices.KWinInputMonitor.isActive()) {
+      // KDE Plasma Wayland: JNativeHook only sees X11 windows there
+      return org.sikuli.support.devices.KWinInputMonitor.start();
+    }
     try {
       // Make Global Screen logger quiet.
       // Floods the console otherwise
@@ -252,6 +256,12 @@ public class Recorder implements NativeKeyListener, NativeMouseListener, NativeM
             + "    sudo apt install libxkbcommon-x11-0 libxcb-xkb1 libx11-xcb1\n"
             + "Then restart OculiX.");
       }
+      if (org.sikuli.support.devices.KWinInputMonitor.isActive()) {
+        org.sikuli.support.devices.KWinInputMonitor.addNativeMouseListener(this);
+        org.sikuli.support.devices.KWinInputMonitor.addNativeMouseMotionListener(this);
+        org.sikuli.support.devices.KWinInputMonitor.addNativeMouseWheelListener(this);
+        return;
+      }
       //GlobalScreen.addNativeKeyListener(this);
       GlobalScreen.addNativeMouseListener(this);
       GlobalScreen.addNativeMouseMotionListener(this);
@@ -272,7 +282,12 @@ public class Recorder implements NativeKeyListener, NativeMouseListener, NativeM
       // Touching GlobalScreen here when its class init failed (missing
       // native lib) would throw NoClassDefFoundError and bury the real
       // SikuliXception from start(). Guard via the same readiness flag.
-      if (nativeHookReady) {
+      if (org.sikuli.support.devices.KWinInputMonitor.isActive()) {
+        org.sikuli.support.devices.KWinInputMonitor.removeNativeMouseWheelListener(this);
+        org.sikuli.support.devices.KWinInputMonitor.removeNativeMouseMotionListener(this);
+        org.sikuli.support.devices.KWinInputMonitor.removeNativeMouseListener(this);
+        org.sikuli.support.devices.KWinInputMonitor.stopIfUnused();
+      } else if (nativeHookReady) {
         try {
           GlobalScreen.removeNativeMouseWheelListener(this);
           GlobalScreen.removeNativeMouseMotionListener(this);
