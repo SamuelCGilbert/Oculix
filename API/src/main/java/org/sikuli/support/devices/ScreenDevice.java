@@ -113,7 +113,7 @@ public class ScreenDevice extends Devices {
         GraphicsDevice gdev = gdevs[i];
         currentBounds = gdev.getDefaultConfiguration().getBounds();
         try {
-          new Robot(gdev);
+          new WaylandRobot(gdev);
         } catch (AWTException e) {
           Commons.terminate(999, "ScreenDevice.init: device#%d (%s)", i, e.getMessage());
         }
@@ -210,7 +210,7 @@ public class ScreenDevice extends Devices {
   public Robot getRobot() {
     if (robot == null) {
       try {
-        robot = new Robot(gdev);
+        robot = new WaylandRobot(gdev);
       } catch (AWTException e) {
         Commons.terminate(999, "ScreenDevice:robot: %s", e.getMessage());
       }

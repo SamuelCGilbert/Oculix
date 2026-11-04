@@ -30,7 +30,7 @@ public abstract class Devices {
   protected static Robot getGlobalRobot() {
     if (globalRobot == null) {
       try {
-        globalRobot = new Robot();
+        globalRobot = new WaylandRobot();
       } catch (AWTException e) {
         Commons.terminate(999, String.format("SikuliX: Devices: AWT.Robot: %s", e.getMessage()));
       }

@@ -31,7 +31,7 @@ import java.util.Date;
 /**
  * INTERNAL USE Implementation of IRobot making a DesktopRobot using java.awt.Robot
  */
-public class RobotDesktop extends Robot implements IRobot {
+public class RobotDesktop extends WaylandRobot implements IRobot {
 
   final static int MAX_DELAY = 60000;
   public static final int ALL_MODIFIERS = KeyModifier.SHIFT | KeyModifier.CTRL | KeyModifier.ALT |  KeyModifier.META | KeyModifier.ALTGR;
@@ -142,13 +142,11 @@ public class RobotDesktop extends Robot implements IRobot {
     if (MouseDevice.isNotUseable()) {
       return;
     }
-    PointerInfo mp = MouseInfo.getPointerInfo();
-    Point actualPos;
-    if (mp == null) {
+    Point actualPos = WaylandRobot.pointerLocation();
+    if (actualPos == null) {
       Debug.error("RobotDesktop: checkMousePosition: MouseInfo.getPointerInfo invalid after move to (%d, %d)",
               x, y);
     } else {
-      actualPos = mp.getLocation();
       boolean xOff = actualPos.x < (x - 1) || actualPos.x > (x + 1);
       boolean yOff = actualPos.y < (y - 1) || actualPos.y > (y + 1);
       if (xOff || yOff) {

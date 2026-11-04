@@ -70,7 +70,7 @@ public class Guide extends OverlayTransparentWindow implements EventObserver {
 
   private void init(Region region) {
     try {
-      robot = new Robot();
+      robot = new org.sikuli.support.devices.WaylandRobot();
     } catch (AWTException e1) {
       e1.printStackTrace();
     }

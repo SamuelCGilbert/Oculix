@@ -227,9 +227,9 @@ public class Device {
   }
 
   public Location getLocation() {
-    PointerInfo mp = MouseInfo.getPointerInfo();
-    if (mp != null) {
-      return new Location(MouseInfo.getPointerInfo().getLocation());
+    java.awt.Point location = WaylandRobot.pointerLocation();
+    if (location != null) {
+      return new Location(location);
     } else {
       Debug.error("Mouse: not possible to get mouse position (PointerInfo == null)");
       return null;
