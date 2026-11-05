@@ -305,6 +305,54 @@ public final class KWinWayland {
     }
   }
 
+  /** A window as KWin sees it. Bounds are in X11 coordinates, like everything else here. */
+  public static final class WindowInfo {
+    public final String id;
+    public final long pid;
+    public final Rectangle bounds;
+    public final boolean active;
+    public final boolean minimized;
+    public final boolean onCurrentDesktop;
+    public final String title;
+
+    WindowInfo(String id, long pid, Rectangle bounds, String flags, String title) {
+      this.id = id;
+      this.pid = pid;
+      this.bounds = bounds;
+      this.active = flags.indexOf('a') >= 0;
+      this.minimized = flags.indexOf('m') >= 0;
+      this.onCurrentDesktop = flags.indexOf('c') >= 0;
+      this.title = title;
+    }
+  }
+
+  /** All normal windows and dialogs, native Wayland ones too, bottom to top. */
+  public static java.util.List<WindowInfo> windows() {
+    java.util.List<WindowInfo> windows = new java.util.ArrayList<>();
+    double s = scale();
+    for (String record : command("windows").split("\u001e")) {
+      String[] f = record.split("\t", -1);
+      if (f.length < 9) {
+        continue;
+      }
+      Rectangle bounds = new Rectangle((int) Math.round(Integer.parseInt(f[2]) * s),
+          (int) Math.round(Integer.parseInt(f[3]) * s), (int) Math.round(Integer.parseInt(f[4]) * s),
+          (int) Math.round(Integer.parseInt(f[5]) * s));
+      windows.add(new WindowInfo(f[0], Long.parseLong(f[1]), bounds, f[6], f[8]));
+    }
+    return windows;
+  }
+
+  /** Raises and focuses a window. @return false if it is gone */
+  public static boolean activate(String id) {
+    try {
+      command("activate", id);
+      return true;
+    } catch (IllegalStateException e) {
+      return false;
+    }
+  }
+
   public static void mouseMove(int x, int y) {
     double s = scale();
     command("move", String.format(java.util.Locale.ROOT, "%.3f", x / s), String.format(java.util.Locale.ROOT, "%.3f", y / s));
