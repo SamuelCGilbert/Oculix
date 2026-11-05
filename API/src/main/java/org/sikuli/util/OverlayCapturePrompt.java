@@ -4,6 +4,7 @@
 package org.sikuli.util;
 
 import org.sikuli.basics.Debug;
+import org.sikuli.support.devices.KWinWayland;
 import org.sikuli.support.devices.ScreenDevice;
 
 import javax.swing.*;
@@ -58,6 +59,7 @@ public class OverlayCapturePrompt extends JFrame implements EventSubject {
   private Rectangle scr_img_rect = null;
 
   private boolean isLocalScreen = true;
+  private GraphicsDevice fullScreenDevice;
 
   private ScreenDevice screen;
 
@@ -268,11 +270,30 @@ public class OverlayCapturePrompt extends JFrame implements EventSubject {
       }
 */
     this.setBounds(screen.asRectangle());
-    this.setVisible(true);
+    fullScreenDevice = isLocalScreen && KWinWayland.isActive() ? deviceOf(screen.asRectangle()) : null;
+    if (fullScreenDevice != null) {
+      // KWin maximizes a window this large, and a tiling script may undo that, which
+      // leaves it at 2/3 of the screen. A real fullscreen window keeps the whole screen.
+      fullScreenDevice.setFullScreenWindow(this);
+    } else {
+      this.setVisible(true);
+    }
+  }
+
+  private static GraphicsDevice deviceOf(Rectangle bounds) {
+    for (GraphicsDevice device : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()) {
+      if (device.getDefaultConfiguration().getBounds().equals(bounds)) {
+        return device;
+      }
+    }
+    return null;
   }
 
   public void close() {
     Debug.log(4, "CapturePrompt.close: S(%d) freeing resources", screen.getScreenId());
+    if (fullScreenDevice != null && fullScreenDevice.getFullScreenWindow() == this) {
+      fullScreenDevice.setFullScreenWindow(null);
+    }
     setVisible(false);
     dispose();
     scr_img = null;
