@@ -1,3 +1,55 @@
+> [!NOTE]
+> **This is an unofficial fork of OculiX with KDE Plasma Wayland support.** The
+> OculiX developers don't support it, so please don't send them reports about it.
+> The official project is [oculix-org/Oculix](https://github.com/oculix-org/Oculix).
+
+# OculiX for Wayland (unofficial)
+
+On Wayland, Java's screen capture and input only work with X11 apps: captures
+of native Wayland windows come out black, clicks and keys don't reach them, and
+the recorder misses most input. On **KDE Plasma 6 (Wayland)** this fork does
+those things through KDE's window manager (KWin) instead.
+
+| Change | Works on |
+|---|---|
+| Screen capture, mouse and keyboard work with every window | KDE Plasma 6 (Wayland) |
+| The recorder sees all input | KDE Plasma 6 (Wayland) |
+| `App.focus`, `App.window` and the other window functions work with native Wayland windows | KDE Plasma 6 (Wayland) |
+| The capture overlay stays fullscreen with tiling scripts such as Krohnkite | KDE Plasma 6 (Wayland) |
+
+Other desktops, and X11 sessions, work as before. Set `OCULIX_WAYLAND=0` to turn
+the KWin support off.
+
+It needs two small helpers:
+
+- [kwin-input](https://github.com/SamuelCGilbert/kwin-input) for capture,
+  input and windows
+- [autokey-kwin-bridge](https://github.com/SamuelCGilbert/autokey-kwin-bridge)
+  for the recorder
+
+Tested on KDE Plasma 6.8 (Wayland) on Ubuntu. It was written with help from an
+AI assistant (Claude). It's shared as-is, with no promise of support.
+
+## Install
+
+Install kwin-input (and the bridge, if you use the recorder), log out and back
+in, then build this fork:
+
+```bash
+git clone -b wayland https://github.com/SamuelCGilbert/Oculix.git
+cd Oculix
+mvn clean install -DskipTests
+```
+
+## Updates
+
+This fork is updated with new OculiX releases from time to time. The changes are
+on the `wayland` branch; `master` is an unchanged copy of the official OculiX.
+
+*The original OculiX README follows.*
+
+---
+
 <div align="center">
 
 <img src="IDE/src/main/resources/icons/gecko_cyclope_hero.png" width="240" alt="OculiX"/>
